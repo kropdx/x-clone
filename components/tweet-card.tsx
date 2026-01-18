@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -27,7 +27,7 @@ interface TweetCardProps {
   onBookmarkChange?: (isBookmarked: boolean) => void;
 }
 
-export function TweetCard({ tweet, onBookmarkChange }: TweetCardProps) {
+export const TweetCard = memo(function TweetCard({ tweet, onBookmarkChange }: TweetCardProps) {
   const [isLiked, setIsLiked] = useState(tweet.isLiked);
   const [likeCount, setLikeCount] = useState(tweet.likeCount);
   const [isRetweeted, setIsRetweeted] = useState(tweet.isRetweeted);
@@ -56,12 +56,16 @@ export function TweetCard({ tweet, onBookmarkChange }: TweetCardProps) {
     onBookmarkChange?.(newState);
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
+  const handleShare = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/status/${tweet.id}`;
-    await navigator.clipboard.writeText(url);
-  };
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Clipboard API not available or denied - fail silently
+    }
+  }, [tweet.id]);
 
   return (
     <Link href={`/status/${tweet.id}`}>
@@ -232,7 +236,7 @@ export function TweetCard({ tweet, onBookmarkChange }: TweetCardProps) {
       </article>
     </Link>
   );
-}
+});
 
 function TweetContent({ content }: { content: string }) {
   const parts = content.split(/(@\w+|#\w+)/g);

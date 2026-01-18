@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { currentUser } from "@/lib/mock-data";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useCompose } from "@/components/compose-provider";
 
 const navItems = [
   { href: "/home", icon: Home, label: "Home" },
@@ -27,12 +28,9 @@ const navItems = [
   { href: `/${currentUser.username}`, icon: User, label: "Profile" },
 ];
 
-interface SidebarProps {
-  onCompose: () => void;
-}
-
-export function Sidebar({ onCompose }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname();
+  const { openCompose } = useCompose();
 
   return (
     <aside className="sticky top-0 flex h-screen flex-col justify-between py-2 px-2 xl:px-4">
@@ -76,7 +74,7 @@ export function Sidebar({ onCompose }: SidebarProps) {
         </nav>
 
         <Button
-          onClick={onCompose}
+          onClick={openCompose}
           className="mt-4 h-14 rounded-full bg-sky-500 text-lg font-bold hover:bg-sky-600"
         >
           <Feather className="h-6 w-6 xl:hidden" />
